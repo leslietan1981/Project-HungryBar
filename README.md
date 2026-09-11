@@ -1,10 +1,10 @@
-# GA-Unit4-Project-LesOrder
+# Project-HungryBar
 
-**LesOrder** is a React-based POS ordering system for on-venue restaurants, covering **front-of-house ordering**, **back-of-house order management**, and **admin inventory management**. The idea came from a conversation with a friend interested in starting a cafe.
+**HungryBar** is a React-based POS ordering system for on-venue restaurants, covering **front-of-house ordering**, **back-of-house order management**, and **admin inventory management**. The idea came from a conversation with a friend interested in starting a cafe.
 
 ## 🚧 Project Status: UI/Code Overhaul in Progress
 
-This project is currently undergoing a full overhaul of both UI and codebase (see branch `user-ui-overhaul`). The Guest (Customer) UI has been rebuilt first, currently running on local dummy data ahead of backend integration. Staff UI is next in the pipeline.
+This project is currently undergoing a full overhaul of both UI and codebase. The Guest (Customer) UI has been rebuilt first, currently running on local dummy data ahead of backend integration. Staff UI has been rebuilt with features to view, accept, complete and also reject orders. Admin UI is next in the pipeline.
 
 ## Updated Screenshots (v2 — Guest UI)
 
@@ -16,17 +16,17 @@ This project is currently undergoing a full overhaul of both UI and codebase (se
 | -------------------------------------- | ------------------------------------------ |
 | ![Cart](screenshots/v2-guest-cart.png) | ![Orders](screenshots/v2-guest-orders.png) |
 
-## About LesOrder
+## About HungryBar
 
-LesOrder is an e-commerce style app for managing onsite ordering. Customers browse and order onsite, staff verify orders before sending them to the kitchen, and admins manage the menu.
+HungryBar is an e-commerce style app for managing onsite ordering. Customers browse and order onsite, staff verify orders before sending them to the kitchen, and admins manage the menu.
 
 The app is designed mobile-first for front-of-house (guest) use, and tablet-first for back-of-house (staff) and admin use.
 
 ### 3 Separate UIs
 
 - **Guest UI** — public-facing UI for customers to browse and order food.
-- **Staff UI** _(in progress)_ — staff-facing UI to view and manage incoming orders.
-- **Admin UI** — admin-facing UI for managing products.
+- **Staff UI** — staff-facing UI to view and manage incoming orders.
+- **Admin UI** _(in progress)_ — admin-facing UI for managing products.
 
 All three roles share a single landing page; role-specific paths are separated via login from that landing page.
 
@@ -42,20 +42,26 @@ All three roles share a single landing page; role-specific paths are separated v
 
 #### Staff UI
 
-- Not yet implemented — see **Coming Next** below.
+- View active orders (new and accepted).
+- Accept new orders.
+- Reject orders.
+- Complete orders.
+- View completed / rejected orders.
 
 #### Admin UI
 
-- Manage Products: adding, editing, and deleting products.
+- Manage Products: Full CRUD.
+- Manage Users: Full CRUD.
 
-## Coming Next: Staff UI
+## Coming Next: Admin UI
 
-The Staff UI will house orders submitted from the Guest UI. Staff log in from the shared landing page and are routed into the Staff UI, where each order moves through 4 states:
+The Admin UI allows the admin role to manage products for the GuestUI and to manage Users on the system (members, staff, admin).
 
-1. **New** — order is first received when a guest places it.
-2. **Accepted** — staff accepts the order via a button click.
-3. **Completed** — staff checks off individual items in an accepted order; once all items are checked off, the order can be marked complete.
-4. **Voided** — an order can be flagged as voided while in either the **New** or **Accepted** state.
+1. Manage products:
+   - CRUD for categories management.
+   - CRUD for products management.
+2. Manage users:
+   - CRUD for users management. Admin will be able to Read, Update and Delete Members, and Create, Read, Update, and Delete Staff and Admins.
 
 ## The Tech
 
@@ -88,66 +94,61 @@ The Staff UI will house orders submitted from the Guest UI. Staff log in from th
 - `DB_USER`
 - `JWT_SECRET_KEY`
 
-## Component Tree
+## Component Tree (General)
 
 ```
 └─ App
-   ├─ AppUserUI
+   ├─ GuestUI
    │ ├─ SplashPage
-   │ ├─ HomePage
+   │ │  ├─ LoginBox
+   │ │  └─ TableNumberBox
+   │ │
+   │ ├─ GuestHomePage
    │ │  ├─ CategoryBar
-   │ │  │  └─ CategoryTile
    │ │  │
    │ │  ├─ ProductList
-   │ │  │  └─ ProductListGroup
-   │ │  │  └─ ProductTile
+   │ │  │  └─ ProductListItem
    │ │  │
-   │ │  └─ DrawerWrapper
-   │ │     └─ ProductDetails
-   │ │        ├─ ProductOptions
-   │ │        └─ SpinButton
+   │ │  └─ ProductDetails
+   │ │     ├─ ProductOptions
+   │ │     └─ SpinButton
    │ │
-   │ ├─ CheckoutPage
-   │ │  └─ Cart
-   │ │     ├─ CartTile
-   │ │     └─ CartSummary
+   │ ├─ CartPage
+   │ │  ├─ CartList
+   │ │  │  ├─ CartListItem
+   │ │  │  └─ CartListItemTotals
+   │ │  │
+   │ │  └─ CartEmptyBlurb
    │ │
-   │ └─ UserNav
+   │ └─ GuestNav
    │
-   ├─ AppStaffUI
-   │ ├─ StaffNav
-   │ ├─ OrdersBar
-   │ └─ NewOrdersList
-   │    └─ NewOrderCard
+   ├─ StaffUI
+   │ ├─ ActiveOrdersPage
+   │ │  └─ ContractList
+   │ │     ├─ NewOrderListItem
+   │ │     └─ AcceptedOrderListItem
+   │ │
+   │ ├─ OrdersHistoryPage
+   │ │  └─ ContractList
+   │ │     ├─ CompletedOrderListItem
+   │ │     └─ VoidedOrderListItem
+   │ │
+   │ └─ StaffNav
    │
-   └─ AppAdminUI
-     ├─ AdminLoginRoute
-     ├─ AdminRegisterRoute
-     └─ AdminDashboard
-        ├─ AdminNav
-        └─ ManageProductsPage
-           ├─ UpdateProductCard
-           ├─ NewProductCard
-           └─ AUiProductCard
+   └─ AdminUI
 ```
 
-_Note: component tree reflects the pre-overhaul structure and will be updated as the UI overhaul progresses._
+_Note: component tree will be updated as the UI overhaul progresses._
 
 ## Learnings
 
-Early iterations of this project surfaced the importance of proper upfront planning — the original build ran into blockages that came directly from a lack of it. That lesson is driving the current overhaul: replanning the app flow before rebuilding each section, starting with the Guest UI.
-
-MUI proved genuinely useful once its out-of-the-box patterns were embraced rather than fought — which also explains why so many MUI-based apps share a similar look.
+Early iterations of this project surfaced the importance of proper upfront planning — the original build ran into blockages that came directly from a lack of it. That lesson is driving the current overhaul: replanning the app flow before rebuilding each section, starting with the Guest UI..
 
 ## Next Steps
 
-#### Staff (in progress)
+#### Staff
 
-- View incoming orders (accept or reject)
-- View in-kitchen orders (accepted orders)
-- Complete kitchen orders when served, with per-item check-off
-- Void orders (from New or Accepted state)
-- View completed orders
+- Manage product statuses (sold out / not available)
 
 #### Guest
 
