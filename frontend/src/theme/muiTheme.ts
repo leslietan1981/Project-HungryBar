@@ -161,6 +161,15 @@ muiTheme = createTheme(muiTheme, {
         },
       },
     },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          backgroundColor: muiTheme.palette.secondary.light,
+          color: muiTheme.palette.secondary.contrastText,
+          textTransform: "uppercase",
+        },
+      },
+    },
   },
 });
 
