@@ -1,6 +1,8 @@
 import type { CategoryResponse } from "../types/api/category.types.ts";
 import type { OrderItemResponse, OrderResponse } from "../types/api/order.types.ts";
 import type { ProductOptionResponse, ProductResponse } from "../types/api/product.types.ts";
+import type { UserResponse } from "../types/api/user.types.ts";
+import { toFixLength } from "../utils/formatUtils.ts";
 
 export const sample_img = "https://res.cloudinary.com/dgxtlldpx/image/upload/v1781661891/category-sample-1.jpg";
 
@@ -94,7 +96,7 @@ const generateProducts = (): ProductResponse[] => {
 
 export const dev_products: ProductResponse[] = generateProducts();
 
-export const dev_generateOrders = (): OrderResponse[] => {
+const dev_generateOrders = (): OrderResponse[] => {
   const seedingCount = Math.floor(Math.random() * 9) + 2;
   const results: OrderResponse[] = [];
 
@@ -123,3 +125,25 @@ export const dev_generateOrders = (): OrderResponse[] => {
 };
 
 export const dev_orders: OrderResponse[] = dev_generateOrders();
+
+const dev_generateUsers = (role: string): UserResponse[] => {
+  const seedingCount = Math.floor(Math.random() * 9) + 2;
+  const results: UserResponse[] = [];
+
+  for (let i = 0; i < seedingCount; i++) {
+    results.push({
+      id: `${role.charAt(0)}${toFixLength(i, 4)}`,
+      name: `User${i + 1}`,
+      role,
+      email: `user${i + 1}@hungrybar.com`,
+      created_at: "2026-09-24",
+      updated_at: "2026-09-24",
+      last_login_at: "Fri 18 Sep 2026",
+    });
+  }
+  return results;
+};
+
+export const dev_users_staff: UserResponse[] = dev_generateUsers("Staff");
+
+export const dev_users_admins: UserResponse[] = dev_generateUsers("Admin");
