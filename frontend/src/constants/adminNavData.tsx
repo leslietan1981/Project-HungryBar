@@ -9,7 +9,7 @@ export const adminNavData: PillNavItem[] = [
     label: "Manage Products",
   },
   {
-    value: NAV_ROUTES.admin.full.users,
+    value: NAV_ROUTES.admin.users.full.index,
     icon: <ManageAccountsRounded />,
     label: "Manage Users",
   },

@@ -1,57 +1,57 @@
-type NavSectionInput = Record<string, string | NavSection<any>> & { index: string; parent: string };
+type NavSectionInput = { [key: string]: string | NavSectionInput };
 
-type FullPaths<T extends NavSectionInput> = {
-  [K in keyof T as K extends "parent" ? never : T[K] extends string ? K : never]: string;
-};
-
-type NavSection<T extends NavSectionInput = NavSectionInput> = T & {
-  full: FullPaths<T>;
-};
-
-interface NavRoutesShape {
+type NavSectionBase = {
   index: string;
-  guest: NavSection<any>;
-  staff: NavSection<any>;
-  admin: NavSection<any>;
-}
-
-const createNavSection = <T extends NavSectionInput>(section: T): NavSection<T> => {
-  const base = section.parent.replace(/\/\*$/, "");
-
-  const full = Object.fromEntries(
-    Object.entries(section)
-      .filter((entry): entry is [string, string] => entry[0] !== "parent" && typeof entry[1] === "string")
-      .map(([key, value]) => [key, base + value]),
-  ) as FullPaths<T>;
-
-  return { ...section, full };
+  parent: string;
 };
 
-export const NAV_ROUTES = {
-  index: "/",
-  guest: createNavSection({
-    parent: "/guest/*",
-    index: "/",
+type FullPaths<T> = NavSectionBase & {
+  [K in keyof T as T[K] extends string ? K : never]: string;
+};
+
+type NavSection<T extends NavSectionInput = NavSectionInput> = {
+  [K in keyof T]: T[K] extends string ? T[K] : T[K] extends NavSectionInput ? NavSection<T[K]> : never;
+} & NavSectionBase & {
+    full: FullPaths<T>;
+  };
+
+const createNavSection = <T extends NavSectionInput>(basePath: string, section: T): NavSection<T> => {
+  const ownSegment = basePath.split("/").filter(Boolean).pop() ?? "";
+  const relativeParent = ownSegment ? `/${ownSegment}/*` : "/*";
+  const result = { index: "/", parent: relativeParent } as any;
+  const full = {} as any;
+
+  for (const [key, value] of Object.entries(section)) {
+    if (typeof value === "object" && value !== null) {
+      result[key] = createNavSection(`${basePath}/${key}`, value);
+    } else {
+      result[key] = value;
+      full[key] = basePath + value;
+    }
+  }
+  full.index = basePath + result.index;
+  full.parent = basePath + "/*";
+
+  result.full = full;
+  return result as NavSection<T>;
+};
+
+export const NAV_ROUTES = createNavSection("", {
+  guest: {
     splash: "/splash",
     home: "/home",
     cart: "/cart",
-  }),
-  staff: createNavSection({
-    parent: "/staff/*",
-    index: "/",
+  },
+  staff: {
     orders_active: "/orders/active",
     orders_history: "/orders/history",
-  }),
-  admin: createNavSection({
-    parent: "/admin/*",
-    index: "/",
+  },
+  admin: {
     products: "/products",
-    users: createNavSection({
-      parent: "/admin/users/*",
-      index: "/",
+    users: {
       members: "/members",
       staff: "/staff",
       admins: "/admins",
-    }),
-  }),
-} satisfies NavRoutesShape;
+    },
+  },
+});
